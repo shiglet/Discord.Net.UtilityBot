@@ -20,6 +20,8 @@ namespace UtilityBot.Services.Tags
         {
             client = map.Get<DiscordSocketClient>();
             db = TagDb.Load();
+            db.RebuildMap();
+            config = map.Get<Configuration.Configuration>();
 
             client.MessageReceived += MessageReceived;
         }

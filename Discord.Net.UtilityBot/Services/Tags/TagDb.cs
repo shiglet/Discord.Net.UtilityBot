@@ -9,9 +9,9 @@ namespace UtilityBot.Services.Tags
         private TagDb() { }
 
         [JsonProperty("tags")]
-        public List<Tag> Tags;
+        public List<Tag> Tags { get; set; } = new List<Tag>();
 
-        public Dictionary<string, Tag> TagMap { get; private set; }
+        public Dictionary<string, Tag> TagMap { get; private set; } = new Dictionary<string, Tag>();
 
         public void RebuildMap()
         {

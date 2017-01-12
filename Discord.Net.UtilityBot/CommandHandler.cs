@@ -16,8 +16,6 @@ namespace UtilityBot
         private readonly DiscordSocketClient _client;
         private readonly Configuration _config;
 
-        private string CommandString => _config.CommandCharacter;
-        private bool Mentions => _config.TriggerOnMention;
         private IEnumerable<ulong> Whitelist => _config.ChannelWhitelist;
 
         public CommandHandler(DependencyMap map)
@@ -26,6 +24,7 @@ namespace UtilityBot
             _client = _map.Get<DiscordSocketClient>();
             _client.MessageReceived += HandleCommand;
             _commands = new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false });
+            _config = _map.Get<Configuration>();
         }
 
         public async Task Configure()
@@ -46,7 +45,6 @@ namespace UtilityBot
             if (result is SearchResult search)
             {
                 await message.AddReactionAsync(UnicodeEmoji.FromText(":mag_right:"));
-                await message.AddReactionAsync(UnicodeEmoji.FromText(":question:"));
             }
             else if (result is PreconditionResult precondition)
                 await message.AddReactionAsync(UnicodeEmoji.FromText(":no_entry:"));
@@ -65,7 +63,7 @@ namespace UtilityBot
 
         private bool ParseTriggers(SocketUserMessage message, ref int argPos)
         {
-            bool flag = (Mentions && message.HasMentionPrefix(_client.CurrentUser, ref argPos)) || (message.HasStringPrefix(CommandString, ref argPos));
+            bool flag = (_config.TriggerOnMention && message.HasMentionPrefix(_client.CurrentUser, ref argPos)) || (message.HasStringPrefix(_config.CommandCharacter, ref argPos));
             return flag ? Whitelist.Any(id => id == message.Channel.Id) : false;
         }
     }
