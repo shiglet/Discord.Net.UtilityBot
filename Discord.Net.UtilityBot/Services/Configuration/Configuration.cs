@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace UtilityBot.Services.Configuration
@@ -14,6 +15,18 @@ namespace UtilityBot.Services.Configuration
         public string CommandCharacter { get; set; } = "$ ";
         [JsonProperty("command_on_mention")]
         public bool TriggerOnMention { get; set; } = true;
+        [JsonProperty("tag_activation_strings")]
+        public IEnumerable<string> TagStrings { get; set; } = new[]
+        {
+            "#",
+            "?ahh "
+        };
+        [JsonProperty("channels")]
+        public IEnumerable<ulong> ChannelWhitelist { get; set; } = new ulong[]
+        {
+            81384956881809408,          // discord api      #dotnet_discord-net
+            150482537465118720,         // discord.net dev  #general
+        };
 
         public static Configuration Load()
         {

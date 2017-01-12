@@ -1,6 +1,8 @@
 ﻿using Discord.Addons.EmojiTools;
 using Discord.Commands;
 using Discord.WebSocket;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using UtilityBot.Services.Configuration;
@@ -16,6 +18,7 @@ namespace UtilityBot
 
         private string CommandString => _config.CommandCharacter;
         private bool Mentions => _config.TriggerOnMention;
+        private IEnumerable<ulong> Whitelist => _config.ChannelWhitelist;
 
         public CommandHandler(DependencyMap map)
         {
@@ -62,9 +65,8 @@ namespace UtilityBot
 
         private bool ParseTriggers(SocketUserMessage message, ref int argPos)
         {
-            if (Mentions && message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return true;
-            if (message.HasStringPrefix(CommandString, ref argPos)) return true;
-            return false;
+            bool flag = (Mentions && message.HasMentionPrefix(_client.CurrentUser, ref argPos)) || (message.HasStringPrefix(CommandString, ref argPos));
+            return flag ? Whitelist.Any(id => id == message.Channel.Id) : false;
         }
     }
 }
