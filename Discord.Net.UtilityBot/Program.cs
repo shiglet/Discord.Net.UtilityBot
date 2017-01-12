@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using UtilityBot.Services.Configuration;
+using UtilityBot.Services.Logging;
 using UtilityBot.Services.Tags;
 
 namespace UtilityBot
@@ -21,11 +22,11 @@ namespace UtilityBot
             client = new DiscordSocketClient();
             config = Configuration.Load();
 
-            await client.LoginAsync(TokenType.Bot, config.Token);
-            await client.ConnectAsync();
-
             var map = new DependencyMap();
             ConfigureServices(map);
+
+            await client.LoginAsync(TokenType.Bot, config.Token);
+            await client.ConnectAsync();
 
             handler = new CommandHandler(map);
             await handler.Configure();
@@ -37,6 +38,7 @@ namespace UtilityBot
         {
             map.Add(client);
             map.Add(config);
+            map.Add(new LogService(map));
             map.Add(new TagService(map));
         }
     }
