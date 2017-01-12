@@ -10,7 +10,7 @@ namespace UtilityBot.Services.Tags
 
         [JsonProperty("tags")]
         public List<Tag> Tags { get; set; } = new List<Tag>();
-
+        [JsonIgnore]
         public Dictionary<string, Tag> TagMap { get; private set; } = new Dictionary<string, Tag>();
 
         public void RebuildMap()
