@@ -11,16 +11,14 @@ namespace UtilityBot.Services.Configuration
 
         [JsonProperty("token")]
         public string Token { get; set; }
-        [JsonProperty("command_activation_string")]
-        public string CommandCharacter { get; set; } = "$";
-        [JsonProperty("command_on_mention")]
-        public bool TriggerOnMention { get; set; } = true;
-        [JsonProperty("tag_activation_strings")]
-        public IEnumerable<string> TagStrings { get; set; } = new[]
+        [JsonProperty("command_activation_strings")]
+        public IEnumerable<string> CommandStrings { get; set; } = new[]
         {
             "#",
             "?ahh "
         };
+        [JsonProperty("command_on_mention")]
+        public bool TriggerOnMention { get; set; } = true;
         [JsonProperty("channels")]
         public IEnumerable<ulong> ChannelWhitelist { get; set; } = new ulong[]
         {

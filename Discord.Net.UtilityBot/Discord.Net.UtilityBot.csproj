@@ -9,6 +9,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Discord.Addons.EmojiTools" Version="1.0.0-ci-00008" />
+    <PackageReference Include="Discord.Addons.InteractiveCommands" Version="1.1.2-ci-00021" />
     <PackageReference Include="Microsoft.NETCore.App" Version="1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="Discord.Net.WebSocket" Version="1.0.0-rc-*" />

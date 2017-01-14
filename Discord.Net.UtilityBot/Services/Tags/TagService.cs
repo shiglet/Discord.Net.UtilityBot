@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Commands.Builders;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -13,41 +14,58 @@ namespace UtilityBot.Services.Tags
     {
         public readonly TagDb db;
 
-        private readonly DiscordSocketClient client;
-        private readonly Configuration.Configuration config;
+        private readonly CommandService commands;
+
+        private ModuleInfo tagModule;
 
         public TagService(IDependencyMap map)
         {
-            client = map.Get<DiscordSocketClient>();
+            commands = map.Get<CommandService>();
             db = TagDb.Load();
-            db.RebuildMap();
-            config = map.Get<Configuration.Configuration>();
-
-            client.MessageReceived += MessageReceived;
         }
 
-        private async Task MessageReceived(SocketMessage message)
+        public async Task BuildCommands()
         {
-            if (message.Author == client.CurrentUser) return;
-            foreach (var prefix in config.TagStrings)
+            if (tagModule != null)
+                await commands.RemoveModuleAsync(tagModule);
+
+            tagModule = await commands.CreateModuleAsync("", module =>
             {
-                if (!message.Content.StartsWith(prefix)) continue;
-                var tagPath = message.Content.Substring(prefix.Length);
+                module.Name = "Tags";
+                
+                foreach (var tag in db.Tags)
+                {
+                    module.AddCommand(tag.Name, async (context, args, map) =>
+                    {
+                        var builder = new EmbedBuilder()
+                            .WithTitle(tag.Name)
+                            .WithDescription(tag.Content);
+                        var user = await context.Channel.GetUserAsync(tag.OwnerId);
+                        if (user != null)
+                            builder.Author = new EmbedAuthorBuilder()
+                                .WithIconUrl(user.AvatarUrl)
+                                .WithName(user.Username);
 
-                if (!db.TagMap.TryGetValue(tagPath, out Tag tag)) return;
+                        await context.Channel.SendMessageAsync("", embed: builder.Build());
+                    }, builder =>
+                    {
+                        builder.AddAliases(tag.Aliases.ToArray());
+                    });
+                }
+            });
+        }
 
-                var builder = new EmbedBuilder()
-                    .WithTitle(tag.Name)
-                    .WithDescription(tag.Content);
-                var user = await message.Channel.GetUserAsync(tag.OwnerId);
-                if (user != null)
-                    builder.Author = new EmbedAuthorBuilder()
-                        .WithIconUrl(user.AvatarUrl)
-                        .WithName(user.Username);
-
-                await message.Channel.SendMessageAsync("", embed: builder.Build());
-                return;
-            }
+        public async Task AddTag(Tag tag)
+        {
+            db.Tags.Add(tag);
+            db.Save();
+            await BuildCommands();
+        }
+        public async Task RemoveTag(Tag tag)
+        {
+            db.Tags.Remove(tag);
+            db.Save();
+            await BuildCommands();
         }
     }
 }

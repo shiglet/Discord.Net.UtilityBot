@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.InteractiveCommands;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace UtilityBot
             config = Configuration.Load();
 
             var map = new DependencyMap();
-            ConfigureServices(map);
+            await ConfigureServices(map);
 
             await client.LoginAsync(TokenType.Bot, config.Token);
             await client.ConnectAsync();
@@ -34,12 +35,14 @@ namespace UtilityBot
             await Task.Delay(-1);
         }
 
-        private void ConfigureServices(DependencyMap map)
+        private async Task ConfigureServices(DependencyMap map)
         {
             map.Add(client);
             map.Add(config);
+            map.Add(new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false }));
             map.Add(new LogService(map));
-            map.Add(new TagService(map));
+            map.Add(new InteractiveService(client));
+            await map.UsingTagService();
         }
     }
 }

@@ -23,7 +23,7 @@ namespace UtilityBot
             _map = map;
             _client = _map.Get<DiscordSocketClient>();
             _client.MessageReceived += HandleCommand;
-            _commands = new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false });
+            _commands = _map.Get<CommandService>();
             _config = _map.Get<Configuration>();
         }
 
@@ -42,28 +42,40 @@ namespace UtilityBot
 
             var context = new SocketCommandContext(_client, message);
             var result = await _commands.ExecuteAsync(context, argPos, _map);
-            if (result is SearchResult search)
+            if (result is SearchResult search && !search.IsSuccess)
             {
                 await message.AddReactionAsync(UnicodeEmoji.FromText(":mag_right:"));
             }
-            else if (result is PreconditionResult precondition)
+            else if (result is PreconditionResult precondition && !precondition.IsSuccess)
                 await message.AddReactionAsync(UnicodeEmoji.FromText(":no_entry:"));
-            else if (result is ParseResult parse)
+            else if (result is ParseResult parse && !parse.IsSuccess)
                 await message.Channel.SendMessageAsync($"**Parse Error:** {parse.ErrorReason}");
-            else if (result is TypeReaderResult reader)
+            else if (result is TypeReaderResult reader && !reader.IsSuccess)
                 await message.Channel.SendMessageAsync($"**Read Error:** {reader.ErrorReason}");
-            else if (result is ExecuteResult execute)
+            else if (result is ExecuteResult execute && !execute.IsSuccess)
             {
                 await message.AddReactionAsync(UnicodeEmoji.FromText(":loudspeaker:"));
                 await message.Channel.SendMessageAsync($"**Error:** {execute.ErrorReason}");
             }
-            else
+            else if (!result.IsSuccess)
                 await message.AddReactionAsync(UnicodeEmoji.FromText(":rage:"));
         }
 
         private bool ParseTriggers(SocketUserMessage message, ref int argPos)
         {
-            bool flag = (_config.TriggerOnMention && message.HasMentionPrefix(_client.CurrentUser, ref argPos)) || (message.HasStringPrefix(_config.CommandCharacter, ref argPos));
+            bool flag = false;
+            if (message.HasMentionPrefix(_client.CurrentUser, ref argPos)) flag = true;
+            else
+            {
+                foreach (var prefix in _config.CommandStrings)
+                {
+                    if (message.HasStringPrefix(prefix, ref argPos))
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+            }
             return flag ? Whitelist.Any(id => id == message.Channel.Id) : false;
         }
     }
