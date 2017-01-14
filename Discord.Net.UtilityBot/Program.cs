@@ -4,6 +4,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using UtilityBot.Services.Configuration;
+using UtilityBot.Services.GitHub;
 using UtilityBot.Services.Logging;
 using UtilityBot.Services.Tags;
 
@@ -43,6 +44,7 @@ namespace UtilityBot
             map.Add(new LogService(map));
             map.Add(new InteractiveService(client));
             await map.UsingTagService();
+            map.Add(new GitHubService(map));
         }
     }
 }

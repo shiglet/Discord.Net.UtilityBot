@@ -36,6 +36,7 @@ namespace UtilityBot
         {
             var message = pMsg as SocketUserMessage;
             if (message == null) return;
+            if (message.Content.StartsWith("##")) return;
 
             int argPos = 0;
             if (!ParseTriggers(message, ref argPos)) return;
