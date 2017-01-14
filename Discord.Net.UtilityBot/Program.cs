@@ -15,13 +15,13 @@ namespace UtilityBot
             new Program().Start().GetAwaiter().GetResult();
 
         private DiscordSocketClient client;
-        private Configuration config;
+        private Config config;
         private CommandHandler handler;
 
         private async Task Start()
         {
             client = new DiscordSocketClient();
-            config = Configuration.Load();
+            config = Config.Load();
 
             var map = new DependencyMap();
             await ConfigureServices(map);

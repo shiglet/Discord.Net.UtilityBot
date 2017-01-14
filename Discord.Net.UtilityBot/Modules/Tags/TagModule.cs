@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UtilityBot.Services.Tags;
+using UtilityBot.Preconditions;
 
 namespace UtilityBot.Modules.Tags
 {
@@ -25,6 +26,7 @@ namespace UtilityBot.Modules.Tags
 
         [Command("tag create", RunMode = RunMode.Async)]
         [Priority(1000)]
+        [RequireElevatedUser]
         public async Task AddTag()
         {
             await ReplyAsync("**What is the name of your tag?** _'cancel' to cancel_");
@@ -68,6 +70,7 @@ namespace UtilityBot.Modules.Tags
 
         [Command("tag remove", RunMode = RunMode.Async)]
         [Priority(1000)]
+        [RequireElevatedUser]
         public async Task RemoveTag([Remainder] string name)
         {
             var tag = _service.db.Tags.FirstOrDefault(t => t.Name == name || t.Aliases.Contains(name));
@@ -89,6 +92,7 @@ namespace UtilityBot.Modules.Tags
 
         [Command("tag modify", RunMode = RunMode.Async)]
         [Priority(1000)]
+        [RequireElevatedUser]
         public async Task ModifyTag(ModifyType modify, [Remainder] string name)
         {
             var tag = _service.db.Tags.FirstOrDefault(t => t.Name == name || t.Aliases.Contains(name));

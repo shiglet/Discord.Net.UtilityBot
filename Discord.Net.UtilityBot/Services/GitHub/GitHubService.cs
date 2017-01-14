@@ -14,12 +14,12 @@ namespace UtilityBot.Services.GitHub
     {
         private readonly Regex IssueRegex = new Regex(@"##([0-9]+)");
         private readonly DiscordSocketClient client;
-        private readonly Configuration.Configuration config;
+        private readonly Config config;
 
         public GitHubService(IDependencyMap map)
         {
             client = map.Get<DiscordSocketClient>();
-            config = map.Get<Configuration.Configuration>();
+            config = map.Get<Config>();
 
             client.MessageReceived += ParseMessage;
         }

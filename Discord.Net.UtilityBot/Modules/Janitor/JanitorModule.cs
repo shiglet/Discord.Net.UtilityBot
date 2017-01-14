@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UtilityBot.Preconditions;
 
 namespace UtilityBot.Modules.Janitor
 {
@@ -14,7 +15,7 @@ namespace UtilityBot.Modules.Janitor
         [Command("tag clean")]
         [Alias("clean", "clear", "cleanup", "c")]
         [Priority(1000)]
-        public async Task Clean(int count = 15)
+        public async Task Clean([RequireJanitorRange] int count = 10)
         {
             int index = 0;
             List<IMessage> delete = new List<IMessage>(count);

@@ -14,7 +14,7 @@ namespace UtilityBot
         private readonly IDependencyMap _map;
         private readonly CommandService _commands;
         private readonly DiscordSocketClient _client;
-        private readonly Configuration _config;
+        private readonly Config _config;
 
         private IEnumerable<ulong> Whitelist => _config.ChannelWhitelist;
 
@@ -24,7 +24,7 @@ namespace UtilityBot
             _client = _map.Get<DiscordSocketClient>();
             _client.MessageReceived += HandleCommand;
             _commands = _map.Get<CommandService>();
-            _config = _map.Get<Configuration>();
+            _config = _map.Get<Config>();
         }
 
         public async Task Configure()

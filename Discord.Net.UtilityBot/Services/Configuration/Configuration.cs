@@ -5,9 +5,9 @@ using System.IO;
 
 namespace UtilityBot.Services.Configuration
 {
-    public sealed class Configuration
+    public sealed class Config
     {
-        private Configuration() { }
+        private Config() { }
 
         [JsonProperty("token")]
         public string Token { get; set; }
@@ -25,15 +25,31 @@ namespace UtilityBot.Services.Configuration
             81384956881809408,          // discord api      #dotnet_discord-net
             150482537465118720,         // discord.net dev  #general
         };
+        [JsonProperty("elevated_user_map")]
+        public Dictionary<ulong, IEnumerable<ulong>> GuildRoleMap { get; set; } = new Dictionary<ulong, IEnumerable<ulong>>
+        {
+            [81384788765712384] = new ulong[] // Discord API
+            {
+                175643578071121920,     // Mod
+                111173097888993280,     // Contributor
+                209033538329116682,     // Proficient
+            },
+            [150482537465118720] = new ulong[] // Discord.Net 1.0 Dev
+            {
+                151110145227751424,     // Volt
+                235852482725543936,     // Contributor
+                235852765216243712,     // Proficient
+            }
+        };
 
-        public static Configuration Load()
+        public static Config Load()
         {
             if (File.Exists("config.json"))
             {
                 var json = File.ReadAllText("config.json");
-                return JsonConvert.DeserializeObject<Configuration>(json);
+                return JsonConvert.DeserializeObject<Config>(json);
             }
-            var config = new Configuration();
+            var config = new Config();
             config.Save();
             throw new InvalidOperationException("configuration file created; insert token and restart.");
         }
