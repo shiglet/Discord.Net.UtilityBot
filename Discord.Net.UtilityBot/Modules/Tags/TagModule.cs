@@ -2,11 +2,8 @@
 using Discord.Addons.EmojiTools;
 using Discord.Addons.InteractiveCommands;
 using Discord.Commands;
-using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UtilityBot.Services.Tags;
 using UtilityBot.Preconditions;
@@ -27,7 +24,7 @@ namespace UtilityBot.Modules.Tags
         [Command("tag create", RunMode = RunMode.Async)]
         [Priority(1000)]
         [RequireElevatedUser]
-        public async Task AddTag()
+        public async Task AddTagAsync()
         {
             await ReplyAsync("**What is the name of your tag?** _'cancel' to cancel_");
             var nameResponse = await _interactive.WaitForMessage(Context.User, Context.Channel, TimeSpan.FromSeconds(180));
@@ -71,7 +68,7 @@ namespace UtilityBot.Modules.Tags
         [Command("tag remove", RunMode = RunMode.Async)]
         [Priority(1000)]
         [RequireElevatedUser]
-        public async Task RemoveTag([Remainder] string name)
+        public async Task RemoveTagAsync([Remainder] string name)
         {
             var tag = _service.db.Tags.FirstOrDefault(t => t.Name == name || t.Aliases.Contains(name));
             if (tag == null)
@@ -93,7 +90,7 @@ namespace UtilityBot.Modules.Tags
         [Command("tag modify", RunMode = RunMode.Async)]
         [Priority(1000)]
         [RequireElevatedUser]
-        public async Task ModifyTag(ModifyType modify, [Remainder] string name)
+        public async Task ModifyTagAsync(ModifyType modify, [Remainder] string name)
         {
             var tag = _service.db.Tags.FirstOrDefault(t => t.Name == name || t.Aliases.Contains(name));
             if (tag == null)
@@ -142,7 +139,7 @@ namespace UtilityBot.Modules.Tags
         [Command("tag list")]
         [Alias("tags")]
         [Priority(1000)]
-        public async Task List()
+        public async Task ListTagsAsync()
         {
             await ReplyAsync($"**Tags:** {string.Join(", ", _service.db.Tags.Select(t => t.Name))}");
         }

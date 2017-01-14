@@ -22,17 +22,17 @@ namespace UtilityBot
         {
             _map = map;
             _client = _map.Get<DiscordSocketClient>();
-            _client.MessageReceived += HandleCommand;
+            _client.MessageReceived += ProcessCommandAsync;
             _commands = _map.Get<CommandService>();
             _config = _map.Get<Config>();
         }
 
-        public async Task Configure()
+        public async Task ConfigureAsync()
         {
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
 
-        private async Task HandleCommand(SocketMessage pMsg)
+        private async Task ProcessCommandAsync(SocketMessage pMsg)
         {
             var message = pMsg as SocketUserMessage;
             if (message == null) return;

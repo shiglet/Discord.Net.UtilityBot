@@ -1,12 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
-using Discord.Commands.Builders;
-using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using UtilityBot.Services.Configuration;
 
 namespace UtilityBot.Services.Tags
 {

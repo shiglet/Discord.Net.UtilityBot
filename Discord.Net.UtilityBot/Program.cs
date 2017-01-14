@@ -13,30 +13,30 @@ namespace UtilityBot
     class Program
     {
         static void Main(string[] args) =>
-            new Program().Start().GetAwaiter().GetResult();
+            new Program().RunAsync().GetAwaiter().GetResult();
 
         private DiscordSocketClient client;
         private Config config;
         private CommandHandler handler;
 
-        private async Task Start()
+        private async Task RunAsync()
         {
             client = new DiscordSocketClient();
             config = Config.Load();
 
             var map = new DependencyMap();
-            await ConfigureServices(map);
+            await ConfigureServicesAsync(map);
 
             await client.LoginAsync(TokenType.Bot, config.Token);
             await client.ConnectAsync();
 
             handler = new CommandHandler(map);
-            await handler.Configure();
+            await handler.ConfigureAsync();
 
             await Task.Delay(-1);
         }
 
-        private async Task ConfigureServices(DependencyMap map)
+        private async Task ConfigureServicesAsync(DependencyMap map)
         {
             map.Add(client);
             map.Add(config);
