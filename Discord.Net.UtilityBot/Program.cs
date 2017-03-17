@@ -28,7 +28,7 @@ namespace UtilityBot
             await ConfigureServicesAsync(map);
 
             await client.LoginAsync(TokenType.Bot, config.Token);
-            await client.ConnectAsync();
+            await client.StartAsync();
 
             handler = new CommandHandler(map);
             await handler.ConfigureAsync();
