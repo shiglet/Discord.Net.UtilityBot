@@ -70,7 +70,7 @@ namespace UtilityBot.Modules.Tags
         [RequireElevatedUser]
         public async Task RemoveTagAsync([Remainder] string name)
         {
-            var tag = _service.db.Tags.FirstOrDefault(t => t.Name == name || t.Aliases.Contains(name));
+            var tag = _service.Database.Tags.FirstOrDefault(t => t.Name == name || t.Aliases.Contains(name));
             if (tag == null)
             {
                 await ReplyAsync("**No tags found.**");
@@ -92,7 +92,7 @@ namespace UtilityBot.Modules.Tags
         [RequireElevatedUser]
         public async Task ModifyTagAsync(ModifyType modify, [Remainder] string name)
         {
-            var tag = _service.db.Tags.FirstOrDefault(t => t.Name == name || t.Aliases.Contains(name));
+            var tag = _service.Database.Tags.FirstOrDefault(t => t.Name == name || t.Aliases.Contains(name));
             if (tag == null)
             {
                 await ReplyAsync("**No tags found.**");
@@ -131,7 +131,7 @@ namespace UtilityBot.Modules.Tags
                     }
             }
 
-            _service.db.Save();
+            _service.Database.Save();
             await _service.BuildCommands();
             await ReplyAsync(UnicodeEmoji.FromText(":ok:"));
         }
@@ -141,7 +141,7 @@ namespace UtilityBot.Modules.Tags
         [Priority(1000)]
         public async Task ListTagsAsync()
         {
-            await ReplyAsync($"**Tags:** {string.Join(", ", _service.db.Tags.Select(t => t.Name))}");
+            await ReplyAsync($"**Tags:** {string.Join(", ", _service.Database.Tags.Select(t => t.Name))}");
         }
 
         public enum ModifyType

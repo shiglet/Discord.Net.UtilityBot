@@ -6,7 +6,7 @@ namespace UtilityBot.Services.Tags
 {
     public class TagService
     {
-        public readonly TagDb db;
+        public readonly TagDb Database;
 
         private readonly CommandService commands;
 
@@ -15,7 +15,7 @@ namespace UtilityBot.Services.Tags
         public TagService(IDependencyMap map)
         {
             commands = map.Get<CommandService>();
-            db = TagDb.Load();
+            Database = TagDb.Load();
         }
 
         public async Task BuildCommands()
@@ -27,7 +27,7 @@ namespace UtilityBot.Services.Tags
             {
                 module.Name = "Tags";
                 
-                foreach (var tag in db.Tags)
+                foreach (var tag in Database.Tags)
                 {
                     module.AddCommand(tag.Name, async (context, args, map) =>
                     {
@@ -51,14 +51,14 @@ namespace UtilityBot.Services.Tags
 
         public async Task AddTag(Tag tag)
         {
-            db.Tags.Add(tag);
-            db.Save();
+            Database.Tags.Add(tag);
+            Database.Save();
             await BuildCommands();
         }
         public async Task RemoveTag(Tag tag)
         {
-            db.Tags.Remove(tag);
-            db.Save();
+            Database.Tags.Remove(tag);
+            Database.Save();
             await BuildCommands();
         }
     }
