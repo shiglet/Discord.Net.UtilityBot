@@ -19,7 +19,7 @@ namespace UtilityBot.Modules.Janitor
                 if (!config.GuildRoleMap.TryGetValue(context.Guild.Id, out IEnumerable<ulong> roles))
                     return Task.FromResult(PreconditionResult.FromError("This guild does not have a whitelist."));
 
-                if (!(context.User as SocketGuildUser).RoleIds.Any(id => roles.Contains(id)))
+                if (!(context.User as SocketGuildUser).Roles.Any(id => roles.Contains(id.Id)))
                     return Task.FromResult(PreconditionResult.FromError("You do not have a whitelisted role."));
 
                 return Task.FromResult(PreconditionResult.FromSuccess());

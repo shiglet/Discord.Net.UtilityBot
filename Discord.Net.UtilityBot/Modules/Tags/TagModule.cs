@@ -55,7 +55,7 @@ namespace UtilityBot.Modules.Tags
                 .WithTitle(tag.Name)
                 .WithDescription(tag.Content)
                 .WithFooter(x => { x.Text = $"Aliases: {string.Join(", ", aliases)}"; })
-                .WithAuthor(x => { x.IconUrl = Context.User.AvatarUrl; x.Name = Context.User.Username; })
+                .WithAuthor(x => { x.IconUrl = Context.User.GetAvatarUrl(); x.Name = Context.User.Username; })
                 .Build();
             await ReplyAsync("**Is This OK?**", embed: embed);
             var okResponse = await _interactive.WaitForMessage(Context.User, Context.Channel, TimeSpan.FromSeconds(30));

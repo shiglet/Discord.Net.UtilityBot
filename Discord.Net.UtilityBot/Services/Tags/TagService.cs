@@ -37,7 +37,7 @@ namespace UtilityBot.Services.Tags
                         var user = await context.Channel.GetUserAsync(tag.OwnerId);
                         if (user != null)
                             builder.Author = new EmbedAuthorBuilder()
-                                .WithIconUrl(user.AvatarUrl)
+                                .WithIconUrl(user.GetAvatarUrl())
                                 .WithName(user.Username);
 
                         await context.Channel.SendMessageAsync("", embed: builder.Build());
