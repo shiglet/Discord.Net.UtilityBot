@@ -166,7 +166,9 @@ namespace UtilityBot.Modules.Tags
                         break;
                     }
             }
-            await Context.Message.AddReactionAsync(UnicodeEmoji.FromText(":ok:"));
+            _service.Database.Save();
+            await _service.BuildCommands();
+            await ReplyAsync(UnicodeEmoji.FromText(":ok:"));
         }
 
         [Command("tag info")]
