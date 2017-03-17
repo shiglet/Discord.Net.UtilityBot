@@ -166,6 +166,7 @@ namespace UtilityBot.Modules.Tags
                         break;
                     }
             }
+            await Context.Message.AddReactionAsync(UnicodeEmoji.FromText(":ok:"));
         }
 
         [Command("tag info")]
@@ -198,6 +199,7 @@ namespace UtilityBot.Modules.Tags
                 f.Name = "Content";
                 f.Value = tag.Content;
             });
+            await ReplyAsync("", embed: builder);
         }
 
         [Command("tag list")]
