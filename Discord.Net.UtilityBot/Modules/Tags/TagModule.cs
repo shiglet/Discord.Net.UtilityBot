@@ -136,6 +136,70 @@ namespace UtilityBot.Modules.Tags
             await ReplyAsync(UnicodeEmoji.FromText(":ok:"));
         }
 
+        [Command("tag set", RunMode = RunMode.Async)]
+        [Priority(1000)]
+        [RequireElevatedUser]
+        public async Task SetTagAsync(ModifyType modify, string name, [Remainder] string value)
+        {
+            var tag = _service.Database.Tags.FirstOrDefault(t => t.Name == name || t.Aliases.Contains(name));
+            if (tag == null)
+            {
+                await ReplyAsync("**No tags found.**");
+                return;
+            }
+
+            switch (modify)
+            {
+                case ModifyType.Name:
+                    {
+                        tag.Name = value;
+                        break;
+                    }
+                case ModifyType.Alias:
+                    {
+                        tag.Aliases = value.Split(';').ToList();
+                        break;
+                    }
+                case ModifyType.Body:
+                    {
+                        tag.Content = value;
+                        break;
+                    }
+            }
+        }
+
+        [Command("tag info")]
+        [Priority(1000)]
+        public async Task GetTagAsync([Remainder] string name)
+        {
+            var tag = _service.Database.Tags.FirstOrDefault(t => t.Name == name || t.Aliases.Contains(name));
+            if (tag == null)
+            {
+                await ReplyAsync("**No tags found.**");
+                return;
+            }
+
+            var builder = new EmbedBuilder()
+                .WithTitle(tag.Name);
+            builder.AddField(f =>
+            {
+                f.Name = "Aliases";
+                f.IsInline = true;
+                f.Value = string.Join(", ", tag.Aliases);
+            });
+            builder.AddField(f =>
+            {
+                f.Name = "Owner";
+                f.IsInline = true;
+                f.Value = tag.OwnerId;
+            });
+            builder.AddField(f =>
+            {
+                f.Name = "Content";
+                f.Value = tag.Content;
+            });
+        }
+
         [Command("tag list")]
         [Alias("tags")]
         [Priority(1000)]
