@@ -42,7 +42,7 @@ namespace UtilityBot
             var container = new Container();
             container.RegisterSingleton(client);
             container.RegisterSingleton(config);
-            container.RegisterSingleton(new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false }));
+            container.RegisterSingleton(new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, ThrowOnError = false}));
             container.RegisterSingleton<LogService>();
             container.RegisterSingleton<InteractiveService>();
             container.RegisterSingleton<TagService>();

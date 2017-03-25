@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using UtilityBot.Services.Configuration;
+using UtilityBot.Services.Logging;
 
 namespace UtilityBot
 {
@@ -24,6 +25,8 @@ namespace UtilityBot
             _client = _map.Get<DiscordSocketClient>();
             _client.MessageReceived += ProcessCommandAsync;
             _commands = _map.Get<CommandService>();
+            var log = _map.Get<LogService>();
+            _commands.Log += log.LogCommand;
             _config = _map.Get<Config>();
         }
 
@@ -53,11 +56,6 @@ namespace UtilityBot
                 await message.Channel.SendMessageAsync($"**Parse Error:** {parse.ErrorReason}");
             else if (result is TypeReaderResult reader && !reader.IsSuccess)
                 await message.Channel.SendMessageAsync($"**Read Error:** {reader.ErrorReason}");
-            else if (result is ExecuteResult execute && !execute.IsSuccess)
-            {
-                await message.AddReactionAsync(UnicodeEmoji.FromText(":loudspeaker:"));
-                await message.Channel.SendMessageAsync($"**Error:** {execute.ErrorReason}");
-            }
             else if (!result.IsSuccess)
                 await message.AddReactionAsync(UnicodeEmoji.FromText(":rage:"));
         }
