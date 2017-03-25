@@ -1,36 +1,35 @@
-﻿using Discord.Commands;
-using Discord.WebSocket;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 using UtilityBot.Services.Configuration;
 
 namespace UtilityBot.Services.GitHub
 {
     public class GitHubService
     {
-        private readonly Regex IssueRegex = new Regex(@"##([0-9]+)");
-        private readonly DiscordSocketClient client;
-        private readonly Config config;
+        private readonly Regex _issueRegex = new Regex(@"##([0-9]+)");
+        private readonly DiscordSocketClient _client;
+        private readonly Config _config;
 
-        public GitHubService(IDependencyMap map)
+        public GitHubService(DiscordSocketClient client, Config config)
         {
-            client = map.Get<DiscordSocketClient>();
-            config = map.Get<Config>();
-
             client.MessageReceived += ParseMessage;
+
+            _client = client;
+            _config = config;
         }
 
         public async Task ParseMessage(SocketMessage message)
         {
-            if (!config.ChannelWhitelist.Any(id => message.Channel.Id == id)) return;
-            if (message.Author.Id == client.CurrentUser.Id) return;
+            if (_config.ChannelWhitelist.All(id => message.Channel.Id != id)) return;
+            if (message.Author.Id == _client.CurrentUser.Id) return;
 
-            MatchCollection matches = IssueRegex.Matches(message.Content);
+            var matches = _issueRegex.Matches(message.Content);
             if (matches.Count > 0)
             {
-                StringBuilder outStr = new StringBuilder();
+                var outStr = new StringBuilder();
                 foreach (Match match in matches)
                 {
                     outStr.AppendLine($"{match.Value} - https://github.com/RogueException/Discord.Net/issues/{match.Value.Substring(2)}");

@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
@@ -9,9 +8,8 @@ namespace UtilityBot.Services.Logging
     // todo: replace this with a real logging implementation
     public class LogService
     {
-        public LogService(IDependencyMap map)
+        public LogService(DiscordSocketClient client)
         {
-            var client = map.Get<DiscordSocketClient>();
             client.Log += Log;
         }
 

@@ -3,6 +3,8 @@ using Discord.Addons.InteractiveCommands;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using Discord.Addons.SimpleInjectorBridge;
+using SimpleInjector;
 using UtilityBot.Services.Configuration;
 using UtilityBot.Services.GitHub;
 using UtilityBot.Services.Logging;
@@ -24,8 +26,7 @@ namespace UtilityBot
             client = new DiscordSocketClient();
             config = Config.Load();
 
-            var map = new DependencyMap();
-            await ConfigureServicesAsync(map);
+            var map = ConfigureServicesAsync();
 
             await client.LoginAsync(TokenType.Bot, config.Token);
             await client.StartAsync();
@@ -36,15 +37,23 @@ namespace UtilityBot
             await Task.Delay(-1);
         }
 
-        private async Task ConfigureServicesAsync(DependencyMap map)
+        private IDependencyMap ConfigureServicesAsync()
         {
-            map.Add(client);
-            map.Add(config);
-            map.Add(new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false }));
-            map.Add(new LogService(map));
-            map.Add(new InteractiveService(client));
-            await map.UsingTagService();
-            map.Add(new GitHubService(map));
+            var container = new Container();
+            container.RegisterSingleton(client);
+            container.RegisterSingleton(config);
+            container.RegisterSingleton(new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false }));
+            container.RegisterSingleton<LogService>();
+            container.RegisterSingleton<InteractiveService>();
+            container.RegisterSingleton<TagService>();
+            container.RegisterSingleton<GitHubService>();
+            // SimpleInjector will not instantiate a Singleton until the first request, so we need to request a few
+            // of these now.
+            // I don't plan on using SimpleInjector after this project for this reason.
+            container.GetInstance<LogService>();
+            container.GetInstance<TagService>();
+            container.GetInstance<GitHubService>();
+            return new SimpleDependencyMap(container);
         }
     }
 }

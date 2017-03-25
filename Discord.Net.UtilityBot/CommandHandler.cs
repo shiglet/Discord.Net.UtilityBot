@@ -18,7 +18,7 @@ namespace UtilityBot
 
         private IEnumerable<ulong> Whitelist => _config.ChannelWhitelist;
 
-        public CommandHandler(DependencyMap map)
+        public CommandHandler(IDependencyMap map)
         {
             _map = map;
             _client = _map.Get<DiscordSocketClient>();

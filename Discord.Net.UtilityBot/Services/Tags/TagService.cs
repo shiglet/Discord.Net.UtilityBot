@@ -8,22 +8,23 @@ namespace UtilityBot.Services.Tags
     {
         public readonly TagDb Database;
 
-        private readonly CommandService commands;
+        private readonly CommandService _commands;
 
         private ModuleInfo tagModule;
 
-        public TagService(IDependencyMap map)
+        public TagService(CommandService commands)
         {
-            commands = map.Get<CommandService>();
+            _commands = commands;
             Database = TagDb.Load();
+            BuildCommands().GetAwaiter().GetResult();
         }
 
         public async Task BuildCommands()
         {
             if (tagModule != null)
-                await commands.RemoveModuleAsync(tagModule);
+                await _commands.RemoveModuleAsync(tagModule);
 
-            tagModule = await commands.CreateModuleAsync("", module =>
+            tagModule = await _commands.CreateModuleAsync("", module =>
             {
                 module.Name = "Tags";
                 
