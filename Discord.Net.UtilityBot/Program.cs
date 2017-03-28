@@ -17,22 +17,22 @@ namespace UtilityBot
         static void Main(string[] args) =>
             new Program().RunAsync().GetAwaiter().GetResult();
 
-        private DiscordSocketClient client;
-        private Config config;
-        private CommandHandler handler;
+        private DiscordSocketClient _client;
+        private Config _config;
+        private CommandHandler _handler;
 
         private async Task RunAsync()
         {
-            client = new DiscordSocketClient();
-            config = Config.Load();
+            _client = new DiscordSocketClient();
+            _config = Config.Load();
 
             var map = ConfigureServicesAsync();
 
-            await client.LoginAsync(TokenType.Bot, config.Token);
-            await client.StartAsync();
+            await _client.LoginAsync(TokenType.Bot, _config.Token);
+            await _client.StartAsync();
 
-            handler = new CommandHandler(map);
-            await handler.ConfigureAsync();
+            _handler = new CommandHandler(map);
+            await _handler.ConfigureAsync();
 
             await Task.Delay(-1);
         }
@@ -40,8 +40,8 @@ namespace UtilityBot
         private IDependencyMap ConfigureServicesAsync()
         {
             var container = new Container();
-            container.RegisterSingleton(client);
-            container.RegisterSingleton(config);
+            container.RegisterSingleton(_client);
+            container.RegisterSingleton(_config);
             container.RegisterSingleton(new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, ThrowOnError = false}));
             container.RegisterSingleton<LogService>();
             container.RegisterSingleton<InteractiveService>();

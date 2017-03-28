@@ -13,8 +13,8 @@ namespace UtilityBot.Modules.Janitor
         [Priority(1000)]
         public async Task CleanAsync([RequireJanitorRange] int count = 10)
         {
-            int index = 0;
-            List<IMessage> delete = new List<IMessage>(count);
+            var index = 0;
+            var delete = new List<IMessage>(count);
             await Context.Channel.GetMessagesAsync().ForEachAsync(async batch =>
             {
                 var messages = batch.Where(m => m.Author.Id == Context.Client.CurrentUser.Id);

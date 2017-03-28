@@ -9,6 +9,7 @@ namespace UtilityBot.Preconditions
 {
     public class RequireElevatedUserAttribute : PreconditionAttribute
     {
+        // TODO: dm-safety
         public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IDependencyMap map)
         {
             var config = map.Get<Config>();

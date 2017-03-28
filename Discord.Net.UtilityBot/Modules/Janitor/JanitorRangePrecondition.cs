@@ -9,6 +9,7 @@ namespace UtilityBot.Modules.Janitor
 {
     public class RequireJanitorRangeAttribute : ParameterPreconditionAttribute
     {
+        // TODO: dm-safety
         public override Task<PreconditionResult> CheckPermissions(ICommandContext context, ParameterInfo parameter, object value, IDependencyMap map)
         {
             int v = (int)value;

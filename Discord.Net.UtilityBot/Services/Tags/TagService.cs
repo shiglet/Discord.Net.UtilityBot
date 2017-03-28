@@ -6,11 +6,11 @@ namespace UtilityBot.Services.Tags
 {
     public class TagService
     {
-        public readonly TagDb Database;
+        public TagDb Database { get; }
 
         private readonly CommandService _commands;
 
-        private ModuleInfo tagModule;
+        private ModuleInfo _tagModule;
 
         public TagService(CommandService commands)
         {
@@ -21,10 +21,10 @@ namespace UtilityBot.Services.Tags
 
         public async Task BuildCommands()
         {
-            if (tagModule != null)
-                await _commands.RemoveModuleAsync(tagModule);
+            if (_tagModule != null)
+                await _commands.RemoveModuleAsync(_tagModule);
 
-            tagModule = await _commands.CreateModuleAsync("", module =>
+            _tagModule = await _commands.CreateModuleAsync("", module =>
             {
                 module.Name = "Tags";
                 
