@@ -12,9 +12,9 @@ using UtilityBot.Services.Tags;
 
 namespace UtilityBot
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args) =>
+        private static void Main(string[] args) =>
             new Program().RunAsync().GetAwaiter().GetResult();
 
         private DiscordSocketClient _client;
@@ -23,7 +23,14 @@ namespace UtilityBot
 
         private async Task RunAsync()
         {
-            _client = new DiscordSocketClient();
+            _client = new DiscordSocketClient(new DiscordSocketConfig
+            {
+#if DEBUG
+                LogLevel = LogSeverity.Debug,
+#else
+                LogLevel = LogSeverity.Verbose,
+#endif
+            });
             _config = Config.Load();
 
             var map = ConfigureServicesAsync();
@@ -43,14 +50,13 @@ namespace UtilityBot
             container.RegisterSingleton(_client);
             container.RegisterSingleton(_config);
             container.RegisterSingleton(new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, ThrowOnError = false}));
-            container.RegisterSingleton<LogService>();
+            container.RegisterSingleton(LogAdaptor.CreateLogger());
+            container.RegisterSingleton<LogAdaptor>();
             container.RegisterSingleton<InteractiveService>();
             container.RegisterSingleton<TagService>();
             container.RegisterSingleton<GitHubService>();
-            // SimpleInjector will not instantiate a Singleton until the first request, so we need to request a few
-            // of these now.
-            // I don't plan on using SimpleInjector after this project for this reason.
-            container.GetInstance<LogService>();
+            // Autowire and create these dependencies now
+            container.GetInstance<LogAdaptor>();
             container.GetInstance<TagService>();
             container.GetInstance<GitHubService>();
             return new SimpleDependencyMap(container);

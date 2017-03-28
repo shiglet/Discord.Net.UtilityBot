@@ -25,7 +25,7 @@ namespace UtilityBot
             _client = _map.Get<DiscordSocketClient>();
             _client.MessageReceived += ProcessCommandAsync;
             _commands = _map.Get<CommandService>();
-            var log = _map.Get<LogService>();
+            var log = _map.Get<LogAdaptor>();
             _commands.Log += log.LogCommand;
             _config = _map.Get<Config>();
         }
