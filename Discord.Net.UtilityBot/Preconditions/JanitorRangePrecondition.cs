@@ -5,14 +5,16 @@ using System.Threading.Tasks;
 using System.Linq;
 using UtilityBot.Services.Configuration;
 
-namespace UtilityBot.Modules.Janitor
+namespace UtilityBot.Preconditions
 {
     public class RequireJanitorRangeAttribute : ParameterPreconditionAttribute
     {
-        // TODO: dm-safety
         public override Task<PreconditionResult> CheckPermissions(ICommandContext context, ParameterInfo parameter, object value, IDependencyMap map)
         {
-            int v = (int)value;
+            if (context.Guild == null)
+                return Task.FromResult(PreconditionResult.FromError("This command may only be used in a guild."));
+
+            var v = (int)value;
             if (v > 10)
             {
                 var config = map.Get<Config>();

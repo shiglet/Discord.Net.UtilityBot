@@ -9,9 +9,11 @@ namespace UtilityBot.Preconditions
 {
     public class RequireElevatedUserAttribute : PreconditionAttribute
     {
-        // TODO: dm-safety
         public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IDependencyMap map)
         {
+            if (context.Guild == null)
+                return Task.FromResult(PreconditionResult.FromError("This command may only be run in a guild."));
+
             var config = map.Get<Config>();
 
             if (!config.GuildRoleMap.TryGetValue(context.Guild.Id, out IEnumerable<ulong> roles))
