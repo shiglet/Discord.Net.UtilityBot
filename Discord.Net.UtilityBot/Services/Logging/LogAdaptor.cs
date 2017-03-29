@@ -11,12 +11,17 @@ namespace UtilityBot.Services.Logging
 {
     public class LogAdaptor
     {
-        private readonly Logger _logger;
+        private readonly ILogger _logger;
 
         public static Logger CreateLogger()
         {
            return new LoggerConfiguration()
-                .WriteTo.ColoredConsole()
+#if DEBUG
+                .MinimumLevel.Verbose()
+#else
+                .MinimumLevel.Debug()
+#endif
+                .WriteTo.LiterateConsole()
 #if RELEASE
                 .WriteTo.RollingFile("log-{Date}.log")
 #endif
@@ -25,18 +30,22 @@ namespace UtilityBot.Services.Logging
 
         public LogAdaptor(Logger logger, DiscordSocketClient client)
         {
-            _logger = logger;
+            _logger = logger.ForContext<DiscordSocketClient>();
             client.Log += LogAsync;
         }
 
         private Task LogAsync(LogMessage message)
         {
-            _logger.Write(
-                GetEventLevel(message.Severity),
-                "{source} {message}",
-                message.Source,
-                message.Message,
-                message.Exception);
+            if (message.Exception == null)
+                _logger.Write(
+                    GetEventLevel(message.Severity),
+                    $"{message.Message}");
+            else
+                _logger.Write(
+                        GetEventLevel(message.Severity),
+                        message.Exception,
+                        $"{message.Message}"
+                    );
 
             return Task.CompletedTask;
         }

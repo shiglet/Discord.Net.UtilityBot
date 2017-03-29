@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Serilog;
+using Serilog.Core;
 using UtilityBot.Services.Configuration;
 using UtilityBot.Services.Logging;
 
@@ -16,6 +18,7 @@ namespace UtilityBot
         private readonly CommandService _commands;
         private readonly DiscordSocketClient _client;
         private readonly Config _config;
+        private readonly ILogger _logger;
 
         private IEnumerable<ulong> Whitelist => _config.ChannelWhitelist;
 
@@ -28,6 +31,7 @@ namespace UtilityBot
             var log = _map.Get<LogAdaptor>();
             _commands.Log += log.LogCommand;
             _config = _map.Get<Config>();
+            _logger = _map.Get<Logger>().ForContext<CommandService>();
         }
 
         public async Task ConfigureAsync()
@@ -58,6 +62,7 @@ namespace UtilityBot
                 await message.Channel.SendMessageAsync($"**Read Error:** {reader.ErrorReason}");
             else if (!result.IsSuccess)
                 await message.AddReactionAsync(UnicodeEmoji.FromText(":rage:"));
+            _logger.Debug("Invoked {Command} in {Context} with {Result}", message, context.Channel, result);
         }
 
         private bool ParseTriggers(SocketUserMessage message, ref int argPos)

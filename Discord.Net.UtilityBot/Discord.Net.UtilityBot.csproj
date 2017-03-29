@@ -14,7 +14,7 @@
     <PackageReference Include="Discord.Net.WebSocket" Version="1.0.0-rc-*" />
     <PackageReference Include="Discord.Net.Commands" Version="1.0.0-rc-*" />
     <PackageReference Include="Serilog" Version="2.4.0" />
-    <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="2.0.0" />
+    <PackageReference Include="Serilog.Sinks.Literate" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
   </ItemGroup>
 </Project>
