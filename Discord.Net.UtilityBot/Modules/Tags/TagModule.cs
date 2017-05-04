@@ -5,8 +5,8 @@ using Discord.Commands;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using UtilityBot.Services.Tags;
 using UtilityBot.Preconditions;
+using UtilityBot.Services.Tags;
 
 namespace UtilityBot.Modules.Tags
 {
@@ -62,7 +62,7 @@ namespace UtilityBot.Modules.Tags
             if (okResponse.Content.Trim().ToLower() == "yes")
                 await _service.AddTag(tag);
             else
-                await ReplyAsync($"{UnicodeEmoji.FromText(":put_litter_in_its_place:")} **Tag disposed**");
+                await ReplyAsync($"{EmojiExtensions.FromText(":put_litter_in_its_place:")} **Tag disposed**");
         }
 
         [Command("tag remove", RunMode = RunMode.Async)]
@@ -81,10 +81,10 @@ namespace UtilityBot.Modules.Tags
             if (confirmation.Content.Contains("y"))
             {
                 await _service.RemoveTag(tag);
-                await ReplyAsync($"{UnicodeEmoji.FromText(":put_litter_in_its_place:")}");
+                await ReplyAsync($"{EmojiExtensions.FromText(":put_litter_in_its_place:")}");
             }
             else
-                await ReplyAsync($"{UnicodeEmoji.FromText(":wheelchair:")}");
+                await ReplyAsync($"{EmojiExtensions.FromText(":wheelchair:")}");
         }
 
         [Command("tag modify", RunMode = RunMode.Async)]
@@ -133,7 +133,7 @@ namespace UtilityBot.Modules.Tags
 
             _service.Database.Save();
             await _service.BuildCommands();
-            await ReplyAsync(UnicodeEmoji.FromText(":ok:"));
+            await ReplyAsync(EmojiExtensions.FromText(":ok:").Name);
         }
 
         [Command("tag set", RunMode = RunMode.Async)]
@@ -168,7 +168,7 @@ namespace UtilityBot.Modules.Tags
             }
             _service.Database.Save();
             await _service.BuildCommands();
-            await ReplyAsync(UnicodeEmoji.FromText(":ok:"));
+            await ReplyAsync(EmojiExtensions.FromText(":ok:").Name);
         }
 
         [Command("tag info")]

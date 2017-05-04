@@ -2,9 +2,9 @@
 using Discord.Addons.InteractiveCommands;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Threading.Tasks;
-using Discord.Addons.SimpleInjectorBridge;
-using SimpleInjector;
 using UtilityBot.Services.Configuration;
 using UtilityBot.Services.GitHub;
 using UtilityBot.Services.Logging;
@@ -33,33 +33,34 @@ namespace UtilityBot
             });
             _config = Config.Load();
 
-            var map = ConfigureServicesAsync();
+            var serviceProvider = ConfigureServicesAsync();
 
             await _client.LoginAsync(TokenType.Bot, _config.Token);
             await _client.StartAsync();
 
-            _handler = new CommandHandler(map);
+            _handler = new CommandHandler(serviceProvider);
             await _handler.ConfigureAsync();
 
             await Task.Delay(-1);
         }
 
-        private IDependencyMap ConfigureServicesAsync()
+        private IServiceProvider ConfigureServicesAsync()
         {
-            var container = new Container();
-            container.RegisterSingleton(_client);
-            container.RegisterSingleton(_config);
-            container.RegisterSingleton(new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, ThrowOnError = false}));
-            container.RegisterSingleton(LogAdaptor.CreateLogger());
-            container.RegisterSingleton<LogAdaptor>();
-            container.RegisterSingleton<InteractiveService>();
-            container.RegisterSingleton<TagService>();
-            container.RegisterSingleton<GitHubService>();
+            var services = new ServiceCollection()
+                .AddSingleton(_client)
+                .AddSingleton(_config)
+                .AddSingleton(new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, ThrowOnError = false}))
+                .AddSingleton(LogAdaptor.CreateLogger())
+                .AddSingleton<LogAdaptor>()
+                .AddSingleton<InteractiveService>()
+                .AddSingleton<TagService>()
+                .AddSingleton<GitHubService>();
+            var provider = new DefaultServiceProviderFactory().CreateServiceProvider(services);
             // Autowire and create these dependencies now
-            container.GetInstance<LogAdaptor>();
-            container.GetInstance<TagService>();
-            container.GetInstance<GitHubService>();
-            return new SimpleDependencyMap(container);
+            provider.GetService<LogAdaptor>();
+            provider.GetService<TagService>();
+            provider.GetService<GitHubService>();
+            return provider;
         }
     }
 }
