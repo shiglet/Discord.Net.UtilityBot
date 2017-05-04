@@ -33,7 +33,7 @@ namespace UtilityBot
             });
             _config = Config.Load();
 
-            var serviceProvider = ConfigureServicesAsync();
+            var serviceProvider = ConfigureServices();
 
             await _client.LoginAsync(TokenType.Bot, _config.Token);
             await _client.StartAsync();
@@ -44,7 +44,7 @@ namespace UtilityBot
             await Task.Delay(-1);
         }
 
-        private IServiceProvider ConfigureServicesAsync()
+        private IServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection()
                 .AddSingleton(_client)
